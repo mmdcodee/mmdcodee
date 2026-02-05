@@ -21,7 +21,7 @@ jobs:
       
       # 1. 生成综合统计图 (Stats Card)
       - name: Generate Stats Images
-        uses: stats-organization/github-readme-stats-action@v1.2.0
+        uses: stats-organization/github-readme-stats-action@v1.1.0
         with:
           token: ${{ secrets.PRIVATE_TOKEN }}
           # 必须指定 card 类型
