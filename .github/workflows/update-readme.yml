@@ -1,0 +1,47 @@
+name: Update Stats
+
+on:
+  schedule:
+    # 每天北京时间早上 8 点运行
+    - cron: "0 0 * * *"
+  # 允许手动触发
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      # 生成统计卡片
+      - name: Generate Stats Images
+        uses: stats-organization/github-readme-stats-action@v1.1.0
+        with:
+          # 关键点1：这里使用你刚才存的私有 Token
+          token: ${{ secrets.PRIVATE_TOKEN }} 
+          
+          # 自动获取你的用户名
+          username: ${{ github.repository_owner }}
+          
+          # 关键点2：在参数里加上 count_private=true
+          # theme 可以改，radical, dark, tokyonight 等等
+          custom_options: "&theme=radical&show_icons=true&count_private=true&include_all_commits=true"
+          
+          # 图片保存路径 (会生成到 profile 文件夹下)
+          output_folder: profile
+
+      # 提交生成的图片
+      - name: Commit and Push
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add profile/*.svg
+          # 如果没有变化就不提交，避免报错
+          git commit -m "Update stats" || echo "No changes to commit"
+          git push
