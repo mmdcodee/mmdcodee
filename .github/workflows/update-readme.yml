@@ -19,28 +19,34 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      # 生成统计卡片
+      # 1. 生成综合统计图 (Stats Card)
       - name: Generate Stats Images
-        uses: stats-organization/github-readme-stats-action@v1.1.0
+        uses: stats-organization/github-readme-stats-action@v1.2.0
         with:
-          # 关键点1：这里使用你刚才存的私有 Token
-          token: ${{ secrets.PRIVATE_TOKEN }} 
-          
-          # 自动获取你的用户名
-          username: ${{ github.repository_owner }}
-          
-          # 关键点2：在参数里加上 count_private=true
-          # theme 可以改，radical, dark, tokyonight 等等
-          custom_options: "&theme=radical&show_icons=true&count_private=true&include_all_commits=true"
-          
-          # 图片保存路径 (会生成到 profile 文件夹下)
-          output_folder: profile
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          # 必须指定 card 类型
+          card: 'stats'
+          # 必须指定生成文件的路径
+          path: 'profile/readme-stats.svg'
+          # ⚠️ 关键修正：所有参数(用户名/主题/私有统计)都要写在 options 这一行里，用 & 连接
+          options: 'username=${{ github.repository_owner }}&theme=radical&show_icons=true&count_private=true&include_all_commits=true'
 
-      # 提交生成的图片
+      # 2. 生成常用语言图 (Top Langs Card) - 既然都跑了，顺便把语言卡片也生成了
+      - name: Generate Top Langs Images
+        uses: stats-organization/github-readme-stats-action@v1.2.0
+        with:
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          card: 'top-langs'
+          path: 'profile/top-langs.svg'
+          # 这里可以配置语言卡片的参数，比如 layout=compact (紧凑模式)
+          options: 'username=${{ github.repository_owner }}&theme=radical&layout=compact&hide_border=true&count_private=true'
+
+      # 3. 提交生成的图片
       - name: Commit and Push
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
+          # 添加 profile 文件夹下的所有 svg
           git add profile/*.svg
           # 如果没有变化就不提交，避免报错
           git commit -m "Update stats" || echo "No changes to commit"
