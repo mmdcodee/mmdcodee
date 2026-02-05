@@ -33,7 +33,7 @@ jobs:
 
       # 2. 生成常用语言图 (Top Langs Card) - 既然都跑了，顺便把语言卡片也生成了
       - name: Generate Top Langs Images
-        uses: stats-organization/github-readme-stats-action@v1.2.0
+        uses: stats-organization/github-readme-stats-action@v1.1.0
         with:
           token: ${{ secrets.PRIVATE_TOKEN }}
           card: 'top-langs'
